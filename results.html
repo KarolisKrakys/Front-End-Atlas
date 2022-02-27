@@ -15,7 +15,7 @@
     let reqArray = [x1, y1, x2, y2];
     console.log(x1, reqArray);
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "localhost:5000/img", true);
+    xhr.open("POST", "http://127.0.0.1:5000/img", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function() {
         if (xhr.readyState == XMLHttpRequest.DONE) {
