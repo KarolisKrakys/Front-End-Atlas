@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <meta name="author" content="MapTiler AG">
+  <meta name="keywords" content="tiles, google maps, pyramid, zoomlevels, maptiler">
+  <meta name="description" content="How does a zoomable map work? Coordinate systems and map projections, transform the shape of Earth into usable flat online maps.">
+  <meta name="theme-color" content="#fff">
+
+  <link rel="icon" sizes="32x32" type="image/png" href="images/favicon.png">
+  <link rel="icon" sizes="192x192" href="images/android-chrome.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  
+
+  <title>Farm Atlas</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="css/css2.css" rel="stylesheet">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <script type="module" src="js/vimeo-loader.js"></script>
+  <script type="module" src="js/youtube-loader.js"></script>
+
+
+
+  
+<link rel="stylesheet" href="css/ol.css" type="text/css">
+<link href="css/mapbox-gl.css" rel="stylesheet">
+<link href="css/base.css" rel="stylesheet">
+
+<script src="js/bootstrap.bundle.min.js"></script>
+
+<script src="js/polyfill.min.js"></script>
+
+<script src="js/mapbox-gl.js"></script>
+<script src="js/ol.js"></script>
+<script src="js/openmaptiles-language.js"></script>
+
+<script src="js/maptiler-geocoder.js"></script>
+
+<script src="js/proj4.js"></script>
+<script src="js/olms.js"></script>
+
+<script src="js/map.js"></script>
+<script src="js/index.js"></script>
+
+
+
+
+  <link rel="canonical" href="https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/">
+  <link rel="alternate" hreflang="en" href="https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/">
+  <link rel="alternate" hreflang="ja" href="https://www.maptiler.jp/google-maps-coordinates-tile-bounds-projection/">
+  <link rel="alternate" hreflang="es" href="https://www.maptiler.es/google-maps-coordinates-tile-bounds-projection/">
+  
+  <script>
+    dataLayer = [];
+  </script>
+
+  <script>
+    (function(w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-K6SD2VP');
+  </script>
+</head>
+ <body>
+   <noscript><iframe src="ns.html" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+   <main>
+    <link rel="stylesheet" href="css/ol_1.css" type="text/css">
+<script src="js/ol_1.js"></script>
+<style>
+  .ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 6px 35px 0px rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -150px;
+    width: 300px;
+    font-size:13px;
+    z-index: 100;
+  }
+  .ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  .ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 150px;
+    margin-left: -10px;
+  }
+  .ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 150px;
+    margin-left: -11px;
+  }
+  .ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 4px;
+    right: 8px;
+  }
+  .ol-popup-closer:after {
+    content: "✖";
+    text-decoration: none;
+    color: #333359;
+    font-size: 16px;
+  }
+  .ol-popup-closer:hover {
+    text-decoration: none !important;
+    color: #44444e;
+  }
+  .bg-primy {
+    background-color: #3758ca;
+  }
+  .gist-file{
+   border: none !important;
+   margin-bottom: 0 !important;
+  }
+  .gist-meta  {
+  position: sticky;
+  bottom: 0;
+  border-top: 1px solid  #CFD3E2;
+  }
+  table tr {
+      border-top: none;
+  }
+  table td {
+      border: none;
+  }
+  .gist .gist-data {
+    border: none !important;
+  }
+  #expandTable{
+    height: 1500px;
+    transition: .5s;
+  }
+  #map-geocoder-wrap{
+    top: unset;
+    right: unset;
+  }
+  .ol-viewport {
+    /* background: #F3F6FF; */
+    position: absolute !important;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+</style>
+<div class="background-rectangle">
+  <img alt="Backround image" src="fonts/rectangle.svg" style="--rScale:2.56;--rY:80px;--rX:-155px;--rRotate:0">
+</div>
+<div class="container-fluid px-0">
+  <div id="map-geocoder-wrap" class="position-absolute ms-gutter my-gutter start-0" style="height: 100%; margin: 0;">
+    <div class="map-geocoder-loupe"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><use href="fonts/icon.svg#search"/></svg></div>
+  </div>
+</div>
+<div id="map_canvas">
+  <div id="popup" class="ol-popup" style="display:none;">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+</div>
+
+<div class="container-lg">
+  
+<div class="background-rectangle">
+  <img alt="Backround image" src="fonts/rectangle.svg" style="--rScale:1.75;--rY:20px;--rX:350px;--rRotate:0">
+</div>
+
+</div>
+<style>
+.gist .blob-code, .gist .blob-num {
+  padding: 0px 10px!important;
+  background: transparent;
+}
+</style>
+<script>
+let view;
+
+function TileMap(){
+  var container = document.getElementById('popup');
+  var content = document.getElementById('popup-content');
+  var closer = document.getElementById('popup-closer');
+  container.style.display = 'block';
+  var overlay = new ol.Overlay({
+    element: container,
+    autoPan: true,
+    autoPanAnimation: {
+      duration: 250
+    }
+  });
+  closer.onclick = function() {
+    overlay.setPosition(undefined);
+    closer.blur();
+    return false;
+  };
+
+  var streets = new ol.layer.Tile({
+      source: new ol.source.TileJSON({
+        url: 'https://api.maptiler.com/maps/streets/256/tiles.json?key=SU6FnmikvTbbA83Cd1NA',
+        crossOrigin: 'anonymous',
+        wrapX: false
+      })
+  });
+
+  var tileGray = '/tools/tiles-a-la-gmaps/img/tiles/gray.png';
+  var tileWhite = '/tools/tiles-a-la-gmaps/img/tiles/white.png';
+  var extent = ol.proj.transformExtent([-180, -85, 180, 85], "EPSG:4326", "EPSG:3857");
+
+  function createCanvasContext2D(opt_width, opt_height) {
+  const canvas = (document.createElement('canvas'));
+  if (opt_width) {
+    canvas.width = opt_width;
+  }
+  if (opt_height) {
+    canvas.height = opt_height;
+  }
+  return (canvas.getContext('2d'));
+  }
+
+  var tiles = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      tileUrlFunction: function (t) {
+        var zoom = t[0];
+        var tile = {
+          x:  t[1],
+          y:  -(t[2] +1)
+        }
+        var tileSize = [512, 512];
+        const half = tileSize[0] / 2;
+        const lineheight = 48;
+        var tilegoogle = " (" + tile.x + "," + (tile.y) +")";
+        var tiletms = " (" + tile.x + "," + ((1 << zoom) - tile.y - 1) + ")";
+        const context = createCanvasContext2D(tileSize[0], tileSize[0]);
+
+        if ((tile.x % 2 && !(tile.y % 2)) || (!(tile.x % 2) && tile.y % 2)) {
+          context.fillStyle = 'rgba(0, 0, 0, 0.32)';
+          context.fillRect(0, 0, tileSize[0], tileSize[1]);
+        }
+        context.fillStyle = 'white';
+        context.strokeStyle = 'black';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.font = 'bold 32px Open Sans';
+        context.lineWidth = 3;
+        context.strokeText(`Google: ${tilegoogle}`, half, half - (lineheight) );
+        context.fillText(`Google: ${tilegoogle}`, half, half - (lineheight) );
+        context.strokeText(`TMS: ${tiletms}`, half, half);
+        context.fillText(`TMS: ${tiletms}`, half, half);
+        context.strokeText(`Zoom ${zoom}`, half, half + (lineheight) );
+        context.fillText(`Zoom ${zoom}`, half, half + (lineheight) );
+        return context.canvas.toDataURL();
+      },
+      wrapX: false,
+      extent: extent
+    })
+  });
+
+  // default zoom, center and rotation
+  var zoom = 3;
+  var center = [15, 50];
+  var shouldUpdate = true;
+
+  if (window.location.hash !== '') {
+    // try to restore center, zoom-level and rotation from the URL
+    var hash = window.location.hash.replace('#', '');
+    var parts = hash.split('/');
+    if (parts.length === 3) {
+      zoom = parseFloat(parts[0]);
+      center = [parseFloat(parts[1]), parseFloat(parts[2])];
+    }
+  }
+
+  view = new ol.View({
+    center: ol.proj.fromLonLat(center),
+    zoom: zoom,
+    extent: extent
+  });
+
+  var map = new ol.Map({
+    layers: [streets, tiles],
+    target: 'map_canvas',
+    overlays: [overlay],
+    view: view,
+     controls: ol.control.defaults({
+        zoom : false,
+        attributionOptions: ({collapsible: false})
+      }).extend([
+        new ol.control.FullScreen()
+      ])
+   });
+     var geocoder = new maptiler.Geocoder({
+       input: 'map-geocoder',
+       key: 'eIgS48TpQ70m77qKYrsx'
+     });
+     geocoder.on('select', function(item) {
+       var bbox = item.bbox;
+       view.fit(ol.proj.transformExtent(bbox, 'EPSG:4326', 'EPSG:3857'));
+    });
+
+
+  map.on('singleclick', function(evt) {
+    var tilegrid = tiles.getSource().getTileGrid();
+    var extent = tilegrid.getExtent();
+    if (ol.extent.containsCoordinate(extent, evt.coordinate)) {
+      var tilecoord = tilegrid.getTileCoordForCoordAndResolution(evt.coordinate, map.getView().getResolution());
+      //Tile extent EPSG:3857
+      var extent3857 = tilegrid.getTileCoordExtent(tilecoord);
+      function RoundedExtent(item, index, arr) {
+        arr[index] = item.toFixed(0);
+      }
+      extent3857.forEach(RoundedExtent)
+
+      //Tile extent EPSG:4326
+      var extent4326 = ol.extent.applyTransform(extent3857, ol.proj.getTransform('EPSG:3857', 'EPSG:4326'));
+      function RoundedExtent4326(item, index, arr) {
+        if (item % 1 == 0) {
+          arr[index] = item.toFixed(0);
+        } else {
+            arr[index] = item.toFixed(6)
+          }
+      }
+      extent4326.forEach(RoundedExtent4326)
+
+      //Tile extent in pixels
+      var extentPixels = [tilecoord[1] * 256, (-tilecoord[2] - 1) * 256];
+      extentPixels[2] = extentPixels[0] + 256;
+      extentPixels[3] = extentPixels[1] + 256;
+
+      content.innerHTML = `<h5>Tile Boundaries</h5>
+        <b>WGS84 datum (longitude/latitude)</b><br>
+        ${extent4326[0]}, ${extent4326[1]}<br>
+        ${extent4326[2]}, ${extent4326[3]}<br>
+        <b>Spherical Mercator (meters)</b><br>
+        ${extent3857[0]}, ${extent3857[1]}<br>
+        ${extent3857[2]}, ${extent3857[3]}<br>
+        <b>Pixels at zoom ${tilecoord[0]}</b><br>
+        ${extentPixels[0]}, ${extentPixels[1]}<br>
+        ${extentPixels[2]}, ${extentPixels[3]}`;
+
+        var popupPosition = ol.extent.getCenter(tilegrid.getTileCoordExtent(tilecoord));
+        overlay.setPosition(popupPosition);
+    } else {
+      content.innerHTML = `<h5>Click outside the Tile Boundaries</h5>
+      <p>To get the details of the tile, click on a tile with an image<p>`;
+      overlay.setPosition(evt.coordinate);
+    }
+
+  });
+
+  const updatePermalink = function () {
+    const view = map.getView();
+    if (!shouldUpdate) {
+      // do not update the URL when the view was changed in the 'popstate' handler
+      shouldUpdate = true;
+      return;
+    }
+
+    const center = view.getCenter();
+    const center4326 = ol.proj.transform(center, "EPSG:3857", "EPSG:4326");
+    const hash =
+      '#' +
+      view.getZoom().toFixed(0) +
+      '/' +
+      center4326[0].toFixed(2) +
+      '/' +
+      center4326[1].toFixed(2);
+    const state = {
+      zoom: view.getZoom(),
+      center: view.getCenter()
+    };
+    window.history.pushState(state, 'map', hash);
+  };
+
+  map.on('moveend', updatePermalink);
+
+  // restore the view state when navigating through the history, see
+  // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
+  window.addEventListener('popstate', function (event) {
+    if (event.state === null) {
+      return;
+    }
+    map.getView().setCenter(event.state.center);
+    map.getView().setZoom(event.state.zoom);
+    shouldUpdate = false;
+  });
+
+}
+
+function expand() {
+    const element = document.getElementById("expand-table");
+    element.classList.toggle("expand-s");
+}
+
+function change( el ){
+  if(el.value === "Show more") {
+      el.value = "Show less";
+  }else{
+      el.value = "Show more";
+  }
+}
+
+</script>
+<script>
+  TileMap();
+</script>
+
+</main>
+
+<script>
+  var initre = true;
+  var popupBtns = document.querySelectorAll('.contact-btn');
+  popupBtns.forEach(function(el) {
+    el.addEventListener('click', popupHandle);
+  });
+
+  var form = document.getElementById('contact');
+  if (form && !window.location.host.startsWith("localhost")) {
+    form.action = 'https://www.map' + "tiler.com/" + 'contact/send/';
+    form.elements["next"].value = window.location.href.split('?')[0];
+    form.elements["em"].value = window.location.hostname.split('.').pop();
+  }
+
+  if (window.location.hash == '#contact') {
+    popupHandle();
+  }
+
+  document.getElementsByClassName('popup-bg')[0].addEventListener('click', popupHandle);
+
+  function popupHandle() {
+    document.getElementsByClassName('popup-bg')[0].classList.toggle('closed');
+    document.getElementsByClassName('popup')[0].classList.toggle('closed');
+    // init recaptcha
+    if (initre) {
+      async('https://www.google.com/recaptcha/api.js', function() {
+      });
+    }
+  }
+
+  function async(u, c) {
+    var d = document, t = 'script',
+        o = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  // Messages
+  var url = window.location.href;
+  var pos = url.indexOf('msg=');
+  if (pos > 0) {
+    var el = document.getElementById('message');
+    var msgType = url.slice(pos + 4);
+    var msg = 'Failed to send message!';
+    if (msgType === 'success') {
+      msg = 'Message has been sent!';
+    }
+    el.innerHTML = msg;
+    el.className += msgType === 'success' ? ' text-success success' : ' text-danger error';
+    document.getElementById('flashes').classList.remove('closed');
+    setTimeout(function () {
+      document.getElementById('flashes').classList.add('closed');
+    }, 3000);
+  }
+
+  document.getElementById('spm').value = 'http://';
+</script>
+
+ <div id="langbarMain" class="position-fixed bottom-0 start-0 bg-white rounded shadow py-gutter px-3 mb-n15 transition-all-50">
+  <a id="langbarClosebtn" type="button" class="text-secondary position-absolute stick-right stick-top m-o5">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <use href="fonts/icon.svg#clear"/>
+    </svg>
+  </a>
+  <div class="d-none" id="langbar-fr">
+    <h3 class="mt-o5">Découvrez MapTiler en français!</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.fr">Visitez maptiler.fr</a>
+  </div>
+  <div class="d-none" id="langbar-cs">
+    <h3 class="mt-o5">Přečtěte si více v češtině</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.cz">Více na maptiler.cz</a>
+  </div>
+  <div class="d-none" id="langbar-es">
+    <h3 class="mt-o5">Leer más en español</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.es">Visite maptiler.es</a>
+  </div>
+  <div class="d-none" id="langbar-nl">
+    <h3 class="mt-o5">Meer in het Nederlands</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.nl">Ga naar maptiler.nl</a>
+  </div>
+  <div class="d-none" id="langbar-ja">
+    <h3 class="mt-o5">日本語で詳細をみる</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.jp">maptiler.jp へ</a>
+  </div>
+  <div class="d-none" id="langbar-de">
+    <h3 class="mt-o5">Weitere Informationen finden Sie</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.de">auf MapTiler.de</a>
+  </div>
+  <div class="d-none" id="langbar-ar">
+    <h3 class="mt-o5 text-end" dir="rtl">ديزملا فشتكإ</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.ae">maptiler.ae <span dir="rtl"> ىلإ لقتنا </span></a>
+  </div>
+  <div class="d-none" id="langbar-ch">
+    <h3 class="mt-o5 mb-3">Explore MapTiler in Switzerland</h3>
+    <a class="btn btn-primary w-100 text-uppercase" href="https://maptiler.de">Visit MapTiler.ch</a>
+  </div>
+</div>
+
+  </body>
+</html>
