@@ -4,6 +4,9 @@
 
 </head>
 <script>
+    function handleRespone(res) {
+        console.log(res);
+    }
     var url = new URL(window.location.href);
     let x1 = url.searchParams.get("x1");
     let y1 = url.searchParams.get("y1");
@@ -14,9 +17,15 @@
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "localhost:5000/img", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            alert(xhr.responseText);
+        }
+    }
     xhr.send(JSON.stringify({
         coords: reqArray
     }));
+    console.log("res:", xhr);
 </script>
 <body>
     <h1>Karolis is a cunt.</h1>
