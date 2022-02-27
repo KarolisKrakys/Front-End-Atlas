@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+</head>
+<script>
+    var url = new URL(window.location.href);
+    let x1 = url.searchParams.get("x1");
+    let y1 = url.searchParams.get("y1");
+    let x2 = url.searchParams.get("x2");
+    let y2 = url.searchParams.get("x1");
+    let reqArray = [x1, y1, x2, y2];
+    console.log(x1, reqArray);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "localhost:5000/img", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        coords: reqArray
+    }));
+</script>
+<body>
+    <h1>Karolis is a cunt.</h1>
+</body>
+</html>

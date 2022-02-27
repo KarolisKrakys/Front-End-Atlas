@@ -199,7 +199,7 @@
 <script>
 let view;
 
-function TileMap(){
+function TileMap() {
   var container = document.getElementById('popup');
   var content = document.getElementById('popup-content');
   var closer = document.getElementById('popup-closer');
@@ -243,25 +243,18 @@ function TileMap(){
   var tiles = new ol.layer.Tile({
     source: new ol.source.XYZ({
       tileUrlFunction: function (t) {
-        console.log("T:", t);
         var zoom = t[0];
         var tile = {
           x:  t[1],
-          y:  -(t[2] +1)
+          y:  -(t[2] + 1)
         }
         var tileSize = [512, 512];
         const half = tileSize[0] / 2;
         const lineheight = 48;
         var tilegoogle = " (" + tile.x + "," + (tile.y) +")";
         var tiletms = " (" + tile.x + "," + ((1 << zoom) - tile.y - 1) + ")";
-        const context = createCanvasContext2D(tileSize[0], tileSize[0]);
+        context = createCanvasContext2D(tileSize[0], tileSize[0]);
 
-        if ((tile.x % 2 && !(tile.y % 2)) || (!(tile.x % 2) && tile.y % 2)) {
-          // context.fillStyle = 'rgba(0, 0, 0, 0.32)';
-          // context.fillStyle = 'rgb(204, 0, 0, 0.32)'; // Red
-          context.fillStyle = 'rgb(0, 153, 51, 0.32)'; // Green
-          context.fillRect(0, 0, tileSize[0], tileSize[1]);
-        }
         // Add in border
         context.lineWidth = 2;
         context.strokeStyle = "#000000";
@@ -336,9 +329,6 @@ function TileMap(){
     let tileLongitude2 = null;
 
     var tilegrid = tiles.getSource().getTileGrid();
-    console.log("TILES:", tiles);
-    console.log("Tilegrid:", tilegrid);
-    console.log("Tilesrc:", tiles.getSource());
     var extent = tilegrid.getExtent();
     if (ol.extent.containsCoordinate(extent, evt.coordinate)) {
       var tilecoord = tilegrid.getTileCoordForCoordAndResolution(evt.coordinate, map.getView().getResolution());
@@ -370,7 +360,7 @@ function TileMap(){
       tileLatitude1 = extent4326[1];
       tileLatitude2 = extent4326[3];
 
-      console.log("COORDS:", "x:", tileLongitude1, "y:", tileLongitude2, "x:", tileLongitude2, "y:", tileLatitude2);
+      window.location.replace(`results.html?x1=${tileLongitude1}&y1=${tileLatitude1}&x2=${tileLongitude2}&y2=${tileLatitude2}`);
 
       content.innerHTML = `<h5>Tile Boundaries</h5>
         <b>WGS84 datum (longitude/latitude)</b><br>
