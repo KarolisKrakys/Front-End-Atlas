@@ -45,9 +45,6 @@
 <script src="js/map.js"></script>
 <script src="js/index.js"></script>
 
-
-
-
   <link rel="canonical" href="https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/">
   <link rel="alternate" hreflang="en" href="https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/">
   <link rel="alternate" hreflang="ja" href="https://www.maptiler.jp/google-maps-coordinates-tile-bounds-projection/">
@@ -325,6 +322,11 @@ function TileMap(){
 
 
   map.on('singleclick', function(evt) {
+    let tileLatitude1 = null;
+    let tileLatitude2 = null;
+    let tileLongitude1 = null;
+    let tileLongitude2 = null;
+
     var tilegrid = tiles.getSource().getTileGrid();
     var extent = tilegrid.getExtent();
     if (ol.extent.containsCoordinate(extent, evt.coordinate)) {
@@ -351,6 +353,13 @@ function TileMap(){
       var extentPixels = [tilecoord[1] * 256, (-tilecoord[2] - 1) * 256];
       extentPixels[2] = extentPixels[0] + 256;
       extentPixels[3] = extentPixels[1] + 256;
+
+      tileLongitude1 = extent4326[0];
+      tileLongitude2 = extent4326[2];
+      tileLatitude1 = extent4326[1];
+      tileLatitude2 = extent4326[3];
+
+      console.log("COORDS:", "x:", tileLongitude1, "y:", tileLongitude2, "x:", tileLongitude2, "y:", tileLatitude2);
 
       content.innerHTML = `<h5>Tile Boundaries</h5>
         <b>WGS84 datum (longitude/latitude)</b><br>
