@@ -21,6 +21,9 @@
 
     function mycallback(data) {
         console.log(data);
+        // document.getElementById("output").src = data;
+        let raw = URL.createObjectURL(new Blob(data));
+        document.getElementById("output").src = raw;
     }
 
     var url = new URL(window.location.href);
