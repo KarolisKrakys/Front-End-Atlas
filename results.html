@@ -22,8 +22,8 @@
     function mycallback(data) {
         console.log(data);
         // document.getElementById("output").src = data;
-        let blob = new Blob(data);
-        let raw = URL.createObjectURL(blob);
+        // let blob = new Blob(data);
+        // let raw = URL.createObjectURL(blob);
         let base64ImageString = Buffer.from(data, 'binary').toString('base64');
         let srcValue = "data:image/jpeg;base64," + base64ImageString;
 
@@ -37,7 +37,13 @@
     let y2 = url.searchParams.get("y2");
     let reqArray = [x1, y1, x2, y2];
 
-    getReq(reqArray, mycallback);
+    // getReq(reqArray, mycallback);
+    fetch("http://127.0.0.1:5000/img", {headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, method: "POST", body: JSON.stringify(reqArray)}).then(response => response.blob())
+    .then(imageBlob=> {
+        const imgObjectUrl = URL.createObjectURL(imageBlob);
+        console.log(imgObjectUrl);
+        document.getElementById("output").src = imgObjectUrl;
+    })
 </script>
 <body>
     <img id="output"></img>
