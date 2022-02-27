@@ -4,6 +4,24 @@
 
 </head>
 <script>
+    function makeRequest(reqData) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:5000/img", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                let resImage = xhr.response;
+                return resImage;
+            }
+        }
+        xhr.send(JSON.stringify({
+            coords: reqArray
+        }));
+    }
+    async function takeData(reqData) {
+        let response = await makeRequest(reqData);
+        return response;
+    }
     let resImage = null;
     function handleRespone(res) {
         console.log(res);
@@ -14,21 +32,10 @@
     let x2 = url.searchParams.get("x2");
     let y2 = url.searchParams.get("y2");
     let reqArray = [x1, y1, x2, y2];
-    console.log(x1, reqArray);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://127.0.0.1:5000/img", true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            resImage = xhr.response;
-        }
-    }
-    xhr.send(JSON.stringify({
-        coords: reqArray
-    }));
-    console.log("res:", xhr);
+    let backRes = takeData(reqArray);
+    document.getElementById("output").src = backRes;
 </script>
 <body>
-    <img src=resImage></img>
+    <img id="output"></img>
 </body>
 </html>
