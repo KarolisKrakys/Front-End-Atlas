@@ -179,7 +179,6 @@
 <div id="map_canvas">
   <div id="popup" class="ol-popup" style="display:none;">
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-    <div id="popup-content"></div>
   </div>
 </div>
 
@@ -260,18 +259,18 @@ function TileMap() {
         context.strokeStyle = "#000000";
         context.strokeRect(0, 0, 512, 512); // For white background
 
-        context.fillStyle = 'white';
-        context.strokeStyle = 'black';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.font = 'bold 32px Open Sans';
-        context.lineWidth = 3;
-        context.strokeText(`Google: ${tilegoogle}`, half, half - (lineheight) );
-        context.fillText(`Google: ${tilegoogle}`, half, half - (lineheight) );
-        context.strokeText(`TMS: ${tiletms}`, half, half);
-        context.fillText(`TMS: ${tiletms}`, half, half);
-        context.strokeText(`Zoom ${zoom}`, half, half + (lineheight) );
-        context.fillText(`Zoom ${zoom}`, half, half + (lineheight) );
+        // context.fillStyle = 'white';
+        // context.strokeStyle = 'black';
+        // context.textAlign = 'center';
+        // context.textBaseline = 'middle';
+        // context.font = 'bold 32px Open Sans';
+        // context.lineWidth = 3;
+        // context.strokeText(`Google: ${tilegoogle}`, half, half - (lineheight) );
+        // context.fillText(`Google: ${tilegoogle}`, half, half - (lineheight) );
+        // context.strokeText(`TMS: ${tiletms}`, half, half);
+        // context.fillText(`TMS: ${tiletms}`, half, half);
+        // context.strokeText(`Zoom ${zoom}`, half, half + (lineheight) );
+        // context.fillText(`Zoom ${zoom}`, half, half + (lineheight) );
         return context.canvas.toDataURL();
       },
       wrapX: false,
