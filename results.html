@@ -22,8 +22,12 @@
     function mycallback(data) {
         console.log(data);
         // document.getElementById("output").src = data;
-        let raw = URL.createObjectURL(new Blob(data));
-        document.getElementById("output").src = raw;
+        let blob = new Blob(data);
+        let raw = URL.createObjectURL(blob);
+        let base64ImageString = Buffer.from(data, 'binary').toString('base64');
+        let srcValue = "data:image/jpeg;base64," + base64ImageString;
+
+        document.getElementById("output").src = base64ImageString;
     }
 
     var url = new URL(window.location.href);
