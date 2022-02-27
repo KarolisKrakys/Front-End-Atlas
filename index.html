@@ -260,18 +260,18 @@ function TileMap() {
         context.strokeRect(0, 0, 512, 512); // For white background
 
         // Old code to show geoinfo
-        // context.fillStyle = 'white';
-        // context.strokeStyle = 'black';
-        // context.textAlign = 'center';
-        // context.textBaseline = 'middle';
-        // context.font = 'bold 32px Open Sans';
-        // context.lineWidth = 3;
+        context.fillStyle = 'white';
+        context.strokeStyle = 'black';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.font = 'bold 32px Open Sans';
+        context.lineWidth = 3;
         // context.strokeText(`Google: ${tilegoogle}`, half, half - (lineheight) );
         // context.fillText(`Google: ${tilegoogle}`, half, half - (lineheight) );
         // context.strokeText(`TMS: ${tiletms}`, half, half);
         // context.fillText(`TMS: ${tiletms}`, half, half);
-        // context.strokeText(`Zoom ${zoom}`, half, half + (lineheight) );
-        // context.fillText(`Zoom ${zoom}`, half, half + (lineheight) );
+        context.strokeText(`Zoom ${zoom}`, half, half + (lineheight) );
+        context.fillText(`Zoom ${zoom}`, half, half + (lineheight) );
         return context.canvas.toDataURL();
       },
       wrapX: false,
